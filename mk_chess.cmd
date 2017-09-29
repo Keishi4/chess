@@ -6,5 +6,5 @@
 @%CC64% -D_DTEST -Wall -o chess64d.exe chess.c >>compl64.log
 @SET CC=
 @SET CC64=
-@DIR *.log *d.exe
+@DIR *.log *d.exe /B
 @PAUSE

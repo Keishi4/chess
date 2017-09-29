@@ -4,7 +4,7 @@
 @%CC% -Wall -o chess32.exe chess.c >>compile.log
 @ECHO *** making release 64-bit executable ***
 @%CC64% -Wall -o chess64.exe chess.c >>compl64.log
-DIR *.log *.exe
+DIR *.log *.exe /B
 @SET CC=
 @SET CC64=
 @PAUSE
