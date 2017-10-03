@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <conio.h>
+/* #include <conio.h> */
 
 // typedef short s16;
 /* It doesn't make any difference whether to use mix of 16 and 32-bit 
