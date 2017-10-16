@@ -12,30 +12,6 @@
 typedef long int s32;
 typedef unsigned long int u32;
 
-/* ***** */
-#ifdef _DTEST
-
-// function run counters
-int knk, knk_other, mv, trs, chk, pw, est, bkmv, msld, vre, vld, ml_cas, ml_ki, ml_ps, rtr;
-int f_run_count[16] = {0};
-void PrintFuncEntryCount(void);
-void StoreAndResetCounters(void);
-void InitCounters(void);
-
-// test union for compacting data
-// practically useless, just testing
-union {
-	struct {
-		u32 loc1 : 4; // = 9
-		u32 loc2 : 4; // = 2
-		s32 dir1 : 4; // = -1
-		s32 dir2 : 4; // = 1
-	};
-	s32 val;
-} common_val;
-
-#endif
-/* ***** */
 
 void re_turn(void);
 void init(void);
@@ -75,8 +51,6 @@ s32 estimate(void);
 void var_restore(void);
 void var_load(void);
 void back_move(s32 car);
-// void MaxMassiv(const s32*);
-// s32 maxVal = 0;
 
 /* Most coords use i/j letters
  * where 'i' is for vertical and 'j' is for horizontal
@@ -99,16 +73,6 @@ s32 b_king_i, b_king_j, b_castle_short, b_castle_long;
 
 int main(void)
 {
-#ifdef _DTEST
-	common_val.val = 7977;
-	// common_val.loc1 = 9;
-	// common_val.loc2 = 2;
-	// common_val.dir1 = -1;
-	// common_val.dir2 = 1;
-	printf("common_val.loc1 = %d common_val.loc2 = %d\n", common_val.loc1, common_val.loc2);
-	printf("common_val.dir1 = %d common_val.dir2 = %d\n", common_val.dir1, common_val.dir2);
-	printf("common_val.val = %d\n", common_val.val);
-#endif
 	s32 control = 0, skill = 0;
 	while (1)
 	{
@@ -171,9 +135,6 @@ int main(void)
 // Переход хода
 void re_turn(void)
 {
-#ifdef _DTEST
-	rtr++;
-#endif
 	if (turn == 1)
 	{
 		turn = 0;
@@ -223,9 +184,6 @@ void init(void)
 		board[8][j] = 10; // Белые
 		board[3][j] = 20; // Черные
 	}
-#ifdef _DTEST
-	InitCounters();
-#endif
 }
 void graph(void)
 {
@@ -471,12 +429,6 @@ s32 vvod(void)
 				continue;
 			case 'x': // Выход из программы
 				return 2;
-#ifdef _DTEST
-			case 'c':
-				PrintFuncEntryCount();
-				StoreAndResetCounters();
-				continue;
-#endif
 			default: // Ввод неизвестен
 				err = 1;
 				break;
@@ -572,9 +524,6 @@ s32 correct(const s32 *i0, const s32 *j0, const s32 *i1, const s32 *j1)
 // Допустимые ходы
 void turns(void)
 {
-#ifdef _DTEST
-	trs++;
-#endif
 	// Перебираем весь массив по клеткам
 	s32 i, j, a0;
 	for (i = 2; i < 10; i++)
@@ -619,18 +568,12 @@ void turns(void)
 // s16 knock(s16 i0, s16 j0)
 s32 knock(const s32 *loc_i0, const s32 *loc_j0)
 {
-#ifdef _DTEST
-	knk++;
-#endif
 	s32 n, knight = enm + 2; // 12 или 22
 	// Удар конем
        for (n = 0; n < 8; n++)
            if (board[(*loc_i0 + knight_i[n])][(*loc_j0 + knight_j[n])] == knight)
                return 1;
 	// Удар другой фигурой
-#ifdef _DTEST
-	knk_other++;
-#endif
 	s32 i, j, di, dj, a0, first, bishop_rook; // 'first' should be bool
 	s32 queen = enm + 4; // 14 или 24
 	s32 king = enm + 5;  // 15 или 25
@@ -693,9 +636,6 @@ s32 knock(const s32 *loc_i0, const s32 *loc_j0)
 }
 s32 move(s32 car)
 {
-#ifdef _DTEST
-	mv++;
-#endif
 	s32 i0, j0, i1, j1, a0, a1, knock_check = 0;
 	s32 check_val;
 	pass_i = 0;
@@ -851,9 +791,6 @@ s32 move(s32 car)
  */
 s32 check(void) // has been bool
 {
-#ifdef _DTEST
-	chk++;
-#endif
 	return turn == 0 ? knock(&w_king_i, &w_king_j) : knock(&b_king_i, &b_king_j);
 }
 // Ход пешкой
@@ -1072,9 +1009,6 @@ void turn_king(const s32 *i0, const s32 *j0)
 // void mass_load_castle(s16 k, s16 i0)
 void mass_load_castle(s32 k, s32 i0)
 {
-#ifdef _DTEST
-	ml_cas++;
-#endif
 	// Координаты
 	const s32 j0 = 6;
 	s32 j;
@@ -1113,9 +1047,6 @@ void mass_load_castle(s32 k, s32 i0)
 // Загрузка в массив ходов
 void mass_load(const s32 *i, const s32 *j, const s32 *i0, const s32 *j0)
 {
-#ifdef _DTEST
-	msld++;
-#endif
 	s32 a = board[*i][*j];
 	s32 a0 = board[*i0][*j0];
 	// Производим изменения на доске
@@ -1140,9 +1071,6 @@ void mass_load(const s32 *i, const s32 *j, const s32 *i0, const s32 *j0)
 // void mass_load_king(s16 i, s16 j, s16 i0, s16 j0)
 void mass_load_king(const s32 *i, const s32 *j, const s32 *i0, const s32 *j0)
 {
-#ifdef _DTEST
-	ml_ki++;
-#endif
 	s32 baking_i = 0, baking_j = 0;
 	s32 a = board[*i][*j];
 	s32 a0 = board[*i0][*j0];
@@ -1192,9 +1120,6 @@ void mass_load_king(const s32 *i, const s32 *j, const s32 *i0, const s32 *j0)
 // void mass_load_pass(s16 i, s16 j, s16 i0, s16 j0)
 void mass_load_pass(const s32 *i, const s32 *j, const s32 *i0, const s32 *j0)
 {
-#ifdef _DTEST
-	ml_ps++;
-#endif
 	s32 a = board[*i][*j];
 	s32 a0 = board[*i0][*j0];
 	s32 b = board[pass_i][pass_j];
@@ -1230,7 +1155,7 @@ void mass_load_pass(const s32 *i, const s32 *j, const s32 *i0, const s32 *j0)
 		s32 car_tab = 0, car = 0, car_fix, car_max;
 		// 32-bit values are used because a bad/neutral/good increment
 		// exceeds 16-bit values and also have to be written to
-		// the tabl array
+		// the tabl[] array
 		// See also a note at the top of the file about 16 and 32 bits
 		s32 bad = 0, neutral = 0, good = 0;
 		s32 power, power_0 = 0, power_base = estimate();
@@ -1315,7 +1240,6 @@ void mass_load_pass(const s32 *i, const s32 *j, const s32 *i0, const s32 *j0)
 		massiv[car_base++] = power_0;
 		massiv[car_base++] = 100;
 		massiv[car_base++] = 0;
-	/* ****	MaxMassiv(&car_base);  **** */
 		// Проверим возможность дальнейшей игры
 		re_turn();
 		car_fix = car_base;
@@ -1458,7 +1382,6 @@ void mass_load_pass(const s32 *i, const s32 *j, const s32 *i0, const s32 *j0)
 // Сравнение оценок
 /* s32 power_vs(s32 power, s32 power_0)
 {
-	/*
 	if (power_0 == 100)
 		return power;
 	if (turn == 0)
@@ -1474,35 +1397,23 @@ void mass_load_pass(const s32 *i, const s32 *j, const s32 *i0, const s32 *j0)
 			return power_0;
 		else
 			return power;
-	} */ 
-	/* Optimized code */
-	/*
-	if (power_0 == 100)
-		return power;
-	if (turn == 0)
-	{
-		return power_0 > power ? power : power_0;
 	}
-	return power_0 > power ? power_0 : power;
 }   */
 s32 power_vs(const s32 *pwr, const s32 *pwr_0)
 {
-#ifdef _DTEST
-	pw++;
-#endif
 	if (*pwr_0 == 100)
 		return *pwr;
 	if (turn == 0)
 	{
 		return (*pwr_0 > *pwr) ? *pwr : *pwr_0;
 	}
-	return (*pwr_0 > *pwr) ? *pwr_0 : *pwr;
+	else
+	{
+		return (*pwr_0 > *pwr) ? *pwr_0 : *pwr;
+	}
 }
 s32 estimate(void)
 {
-#ifdef _DTEST
-	est++;
-#endif
 	s32 i, j, a, power = 0;
 	for (i = 2; i < 10; i++)
 	{
@@ -1559,9 +1470,6 @@ s32 estimate(void)
 }
 void var_restore(void)
 {
-#ifdef _DTEST
-	vre++;
-#endif
 	// Восстанавливаем переменные
 	car_base--;
 	b_castle_long = massiv[car_base--];
@@ -1577,9 +1485,6 @@ void var_restore(void)
 }
 void var_load(void)
 {
-#ifdef _DTEST
-	vld++;
-#endif
 	// Загружаем переменные
 	massiv[car_base++] = w_king_i;
 	massiv[car_base++] = w_king_j;
@@ -1595,9 +1500,6 @@ void var_load(void)
 // Откат назад
 void back_move(s32 car)
 {
-#ifdef _DTEST
-	bkmv++;
-#endif
 	// Отмена изменений на доске
 	s32 i, j, a;
 	do
@@ -1609,90 +1511,3 @@ void back_move(s32 car)
 	} while (massiv[car] != 0);
 }
 
-/////////////////////////////////
-/* void MaxMassiv(const s32* val)
-{
-	if (*val > maxVal)
-		maxVal = *val;
-} */
-
-#ifdef _DTEST
-
-void InitCounters(void)
-{
-	int i;
-	knk = 0;
-	knk_other = 0;
-	mv = 0;
-	trs = 0;
-	chk = 0;
-	pw = 0;
-	est = 0;
-	bkmv = 0;
-	msld = 0;
-	vre = 0;
-	vld = 0;
-	ml_cas = 0;
-	ml_ki = 0;
-	ml_ps = 0;
-	rtr = 0;
-	for(i = 0; i < 16; i++)
-		f_run_count[i] = 0;
-}
-void StoreAndResetCounters(void)
-{
-	f_run_count[0] += knk;
-	f_run_count[1] += mv;
-	f_run_count[2] += trs;
-	f_run_count[3] += chk;
-	f_run_count[4] += pw;
-	f_run_count[5] += est;
-	f_run_count[6] += bkmv;
-	f_run_count[7] += msld;
-	f_run_count[8] += vld;
-	f_run_count[9] += vre;
-	f_run_count[10] += ml_ki;
-	f_run_count[11] += ml_ps;
-	f_run_count[12] += ml_cas;
-	f_run_count[13] += rtr;
-	f_run_count[14] += knk_other; // don't need to store this value
-	knk = 0;
-	knk_other = 0;
-	mv = 0;
-	trs = 0;
-	chk = 0;
-	pw = 0;
-	est = 0;
-	bkmv = 0;
-	msld = 0;
-	vld = 0;
-	vre = 0;
-	ml_ki = 0;
-	ml_ps = 0;
-	ml_cas = 0;
-	rtr = 0;
-}
-void PrintFuncEntryCount(void)
-{
-	printf("\nfunction entry count:\t\t Total:\n \
-		 \n knock()       = %d\t        %d \
-		 \n move()        = %d\t        %d \
-		 \n turns()       = %d\t        %d \
-		 \n check()       = %d\t        %d \
-		 \n power_vs()    = %d\t        %d \
-		 \n estimate()    = %d\t        %d \
-		 \n back_move()   = %d\t        %d \
-		 \n mass_load()   = %d\t        %d \
-		 \n var_load()    = %d\t        %d \
-		 \n var_restore() = %d\t        %d \
-		 \n mass_ld_king()= %d\t        %d \
-		 \n mass_ld_pass()= %d\t        %d \
-		 \n m_ld_castle() = %d\t        %d \
-		 \n re_turn()     = %d\t        %d\n", \
-		knk, f_run_count[0], mv, f_run_count[1], trs, f_run_count[2], chk, f_run_count[3], \
-		pw, f_run_count[4], est, f_run_count[5], bkmv, f_run_count[6], msld, f_run_count[7], \
-		vld, f_run_count[8], vre, f_run_count[9], ml_ki, f_run_count[10], ml_ps, f_run_count[11], \
-		ml_cas, f_run_count[12], rtr, f_run_count[13]);
-    printf("For current turn:\nknock() = %d, other than knight = %d, diff = %d\n", knk, knk_other, (knk - knk_other));
-}
-#endif
